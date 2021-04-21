@@ -21,6 +21,7 @@ class PIDController{
         ros::Subscriber* setPointReader;
         ros::Subscriber* feedbackReader;
         ros::Publisher* outputController;
+        std::function<InputType(FeedbackType)>* feedbackConversion;
         void setPointCallback(InputType::ConstPtr&);
         void feedbackCallback(FeedbackType::ConstPtr&);
 
@@ -36,9 +37,7 @@ class PIDController{
         double[] getPID();
         double getError();
 
-        // TODO: figure out method signature for passing in a function to convert from 
-        // template <typename func>
-        // void set
+        void setFeedbackConversion(std::function<InputType(FeedbackType)>& func);
 
 
 };
