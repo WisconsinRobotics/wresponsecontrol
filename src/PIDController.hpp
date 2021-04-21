@@ -13,6 +13,8 @@ class PIDController{
         double pCurr;
         double iCurr;
         double dCurr;
+        double err;
+        double lastErr;
         InputType setpoint;
         FeedbackType lastFeedback;
         OutputType lastOutput;
@@ -30,6 +32,10 @@ class PIDController{
         double getI();
         void setD(double D);
         double getD();
+        void setPID(double P, double I, double D);
+        double[] getPID();
+        double getError();
+
         // TODO: figure out method signature for passing in a function to convert from 
         // template <typename func>
         // void set
