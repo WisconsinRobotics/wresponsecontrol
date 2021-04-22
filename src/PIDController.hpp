@@ -14,9 +14,6 @@ class PIDController{
         double P;
         double I;
         double D;
-        double pCurr;
-        double iCurr;
-        double dCurr;
         double err;
         double lastErr;
         InputType setpoint;
@@ -25,7 +22,9 @@ class PIDController{
         ros::Subscriber* setPointReader;
         ros::Subscriber* feedbackReader;
         ros::Publisher* outputController;
-        std::function<InputType(FeedbackType)>* feedbackConversion;
+        std::function<double(InputType)>* inputConversion;
+        std::function<double(FeedbackType)>* feedbackConversion;
+        std::function<OutputType(double)>* outputConversion;
         void setPointCallback(InputType::ConstPtr&);
         void feedbackCallback(FeedbackType::ConstPtr&);
         void computeNextOutput();
@@ -44,7 +43,9 @@ class PIDController{
         double getError();
         OutputType getLastOutput();
 
-        void setFeedbackConversion(std::function<InputType(FeedbackType)>& func);
+        void setInputConversion(std::function<double(InputType)>& func);
+        void setFeedbackConversion(std::function<double(FeedbackType)>& func);
+        void setOutputConversion(std::function<OutputType(double)& func);
 
 
 };
