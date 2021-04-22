@@ -24,6 +24,8 @@ class PIDController{
         std::function<InputType(FeedbackType)>* feedbackConversion;
         void setPointCallback(InputType::ConstPtr&);
         void feedbackCallback(FeedbackType::ConstPtr&);
+        void computeNextOutput();
+        void computeAndSendNextOutput();
 
     public:
         PIDController(std::string setPointTopic, std::string feedbackTopic, std::string outputTopic);
@@ -36,6 +38,7 @@ class PIDController{
         void setPID(double P, double I, double D);
         double[] getPID();
         double getError();
+        OutputType getLastOutput();
 
         void setFeedbackConversion(std::function<InputType(FeedbackType)>& func);
 
