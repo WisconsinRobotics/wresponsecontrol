@@ -6,6 +6,10 @@
 
 template <typename InputType, typename FeedbackType, typename OutputType>
 class PIDController{
+    static_assert(ros::message_traits::IsMessage<InputType>, "InputType must derive from Base");
+    static_assert(ros::message_traits::IsMessage<FeedbackType>, "FeedbackType must derive from Base");
+    static_assert(ros::message_traits::IsMessage<OutputType>, "OutputType must derive from Base");
+
     private:
         double P;
         double I;
