@@ -11,4 +11,7 @@ PIDController<InputType, FeedbackType, OutputType>::PIDController(std::string se
     this->D = 0;
     this->err = 0;
     this->lastErr = 0;
+    this->inputConversion = NULL;
+    this->feedbackConversion = NULL;
+    this->outputConversion = NULL;
 }
