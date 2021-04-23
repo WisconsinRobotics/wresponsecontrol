@@ -15,3 +15,13 @@ PIDController<InputType, FeedbackType, OutputType>::PIDController(std::string se
     this->feedbackConversion = NULL;
     this->outputConversion = NULL;
 }
+
+template<typename InputType, typename FeedbackType, typename OutputType>
+void PIDController<InputType, FeedbackType, OutputType>::setPointCallback(inpMsg msg){
+    this->setpoint = msg;
+}
+
+template<typename InputType, typename FeedbackType, typename OutputType>
+void PIDController<InputType, FeedbackType, OutputType>::feedbackCallback(fdbMsg msg){
+    this->feedback = msg;
+}

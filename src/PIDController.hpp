@@ -11,13 +11,17 @@ class PIDController{
     static_assert(ros::message_traits::IsMessage<OutputType>, "OutputType must derive from Base");
 
     private:
+
+        typedef InputType::ConstPtr& inpMsg;
+        typedef FeedbackType::ConstPtr& fdbMsg;
+
         double P;
         double I;
         double D;
         double err;
         double lastErr;
-        InputType setpoint;
-        FeedbackType lastFeedback;
+        inpMsg setpoint;
+        fdbMsg feedback;
         OutputType lastOutput;
         ros::Subscriber* setPointReader;
         ros::Subscriber* feedbackReader;
@@ -25,8 +29,8 @@ class PIDController{
         std::function<double(InputType)>* inputConversion;
         std::function<double(FeedbackType)>* feedbackConversion;
         std::function<OutputType(double)>* outputConversion;
-        void setPointCallback(InputType::ConstPtr&);
-        void feedbackCallback(FeedbackType::ConstPtr&);
+        void setPointCallback(inpMsg msg);
+        void feedbackCallback(fdbMsg msg);
         void computeNextOutput();
         void computeAndSendNextOutput();
 
@@ -43,8 +47,8 @@ class PIDController{
         double getError();
         OutputType getLastOutput();
 
-        void setInputConversion(std::function<double(InputType)>& func);
-        void setFeedbackConversion(std::function<double(FeedbackType)>& func);
+        void setInputConversion(std::function<double(inpMsg)>& func);
+        void setFeedbackConversion(std::function<double(fdbMsg)>& func);
         void setOutputConversion(std::function<OutputType(double)& func);
 
 
