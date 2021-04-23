@@ -20,6 +20,8 @@ class PIDController{
         double D;
         double err;
         double lastErr;
+        double sumErr;
+        double lastRawOutput;
         inpMsg setpoint;
         fdbMsg feedback;
         OutputType lastOutput;
