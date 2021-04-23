@@ -31,7 +31,7 @@ class PIDController{
         void computeAndSendNextOutput();
 
     public:
-        PIDController(std::string setPointTopic, std::string feedbackTopic, std::string outputTopic);
+        PIDController(std::string setPointTopic, std::string feedbackTopic, std::string outputTopic, ros::NodeHandle& node);
         void setP(double P);
         double getP();
         void setI(double I);
