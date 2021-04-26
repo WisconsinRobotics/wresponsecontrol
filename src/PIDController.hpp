@@ -2,18 +2,14 @@
 #define PIDControllerH
 
 #include <ros/ros.h>
+#include <std_msgs/Float64.h>
 #include <iostream>
 
-template <typename InputType, typename FeedbackType, typename OutputType>
 class PIDController{
-    static_assert(ros::message_traits::IsMessage<InputType>::value, "InputType must be a message type");
-    static_assert(ros::message_traits::IsMessage<FeedbackType>::value, "FeedbackType must be a message type");
-    static_assert(ros::message_traits::IsMessage<OutputType>::value, "OutputType must be a message type");
 
     private:
 
-        typedef InputType::ConstPtr& inpMsg;
-        typedef FeedbackType::ConstPtr& fdbMsg;
+        typedef std_msgs::Float64::ConstPtr& MsgPtr;
 
         double P;
         double I;
@@ -22,17 +18,14 @@ class PIDController{
         double lastErr;
         double sumErr;
         double lastRawOutput;
-        inpMsg setpoint;
-        fdbMsg feedback;
-        OutputType lastOutput;
+        double setpoint;
+        double feedback;
+        double lastOutput;
         ros::Subscriber* setPointReader;
         ros::Subscriber* feedbackReader;
         ros::Publisher* outputController;
-        std::function<double(InputType)>* inputConversion;
-        std::function<double(FeedbackType)>* feedbackConversion;
-        std::function<OutputType(double)>* outputConversion;
-        void setPointCallback(inpMsg msg);
-        void feedbackCallback(fdbMsg msg);
+        void setPointCallback(MsgPtr msg);
+        void feedbackCallback(MsgPtr msg);
         void computeNextOutput();
         void computeAndSendNextOutput();
 
@@ -45,14 +38,8 @@ class PIDController{
         void setD(double D);
         double getD();
         void setPID(double P, double I, double D);
-        double[] getPID();
+        double* getPID();
         double getError();
-        OutputType getLastOutput();
-
-        void setInputConversion(std::function<double(inpMsg)>& func);
-        void setFeedbackConversion(std::function<double(fdbMsg)>& func);
-        void setOutputConversion(std::function<OutputType(double)& func);
-
 
 };
 
