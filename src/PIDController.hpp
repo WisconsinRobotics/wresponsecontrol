@@ -37,7 +37,6 @@ class PIDController{
         void setD(double D);
         double getD();
         void setPID(double P, double I, double D);
-        double* getPID();
         double getError();
         void executeNextControlCycle();
 

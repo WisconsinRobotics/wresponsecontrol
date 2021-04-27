@@ -36,3 +36,33 @@ void PIDController::computeAndSendNextOutput(){
 void PIDController::executeNextControlCycle(){
     this->computeAndSendNextOutput();
 }
+
+void PIDController::setP(double P){
+    this->P = P;
+}
+
+double PIDController::getP(){
+    return this->P;
+}
+
+void PIDController::setI(double I){
+    this->I = I;
+}
+
+double PIDController::getI(){
+    return this->I;
+}
+
+void PIDController::setD(double D){
+    this->D = D;
+}
+
+double PIDController::getD(){
+    return this->D;
+}
+
+void PIDController::setPID(double P, double I, double D){
+    this->setP(P);
+    this->setI(I);
+    this->setD(D);
+}
