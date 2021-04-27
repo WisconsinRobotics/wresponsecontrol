@@ -17,7 +17,6 @@ class PIDController{
         double err;
         double lastErr;
         double sumErr;
-        double lastRawOutput;
         double setpoint;
         double feedback;
         double lastOutput;
@@ -26,7 +25,7 @@ class PIDController{
         ros::Publisher* outputController;
         void setPointCallback(MsgPtr msg);
         void feedbackCallback(MsgPtr msg);
-        void computeNextOutput();
+        double computeNextOutput();
         void computeAndSendNextOutput();
 
     public:
@@ -40,6 +39,7 @@ class PIDController{
         void setPID(double P, double I, double D);
         double* getPID();
         double getError();
+        void executeNextControlCycle();
 
 };
 

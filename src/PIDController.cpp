@@ -20,9 +20,19 @@ void PIDController::feedbackCallback(MsgPtr msg){
     this->feedback = msg->data;
 }
 
-void PIDController::computeNextOutput(){
+double PIDController::computeNextOutput(){
     this->lastErr = this->err;
     this->err = this->setpoint - this->feedback;
     this->sumErr += this->err;
-    this->lastRawOutput += this->getP()*this->err + this->getI()*this->sumErr + this->getD()*(this->err - this->lastErr);
+    return this->lastOutput = this->getP()*this->err + this->getI()*this->sumErr + this->getD()*(this->err - this->lastErr);
+}
+
+void PIDController::computeAndSendNextOutput(){
+    std_msgs::Float64 msgNext;
+    msgNext.data = this->computeNextOutput();
+    this->outputController->publish(msgNext);
+}
+
+void PIDController::executeNextControlCycle(){
+    this->computeAndSendNextOutput();
 }
