@@ -1,5 +1,5 @@
 <launch>
-    <node name="TestWResponseControl" pkg="wresponsecontrol" type="WResponseControl">
+    <node name="TestWResponseControl" pkg="wresponsecontrol" type="WResponseControl" output="screen">
         <rosparam file="$(find wresponsecontrol)/config/test.yaml"/>
     </node>
 </launch>
