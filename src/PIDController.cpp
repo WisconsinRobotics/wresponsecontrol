@@ -1,23 +1,23 @@
 #include "PIDController.hpp"
 
+void PIDController::setPointCallback(const MsgPtr msg){
+    this->setpoint = msg->data;
+}
+
+void PIDController::feedbackCallback(const MsgPtr msg){
+    this->feedback = msg->data;
+}
+
 PIDController::PIDController(std::string setPointTopic, std::string feedbackTopic, std::string outputTopic, ros::NodeHandle& node){
-    this->setPointReader = &node.subscribe(setPointTopic, 1000, PIDController::setPointCallback, this);
-    this->feedbackReader = &node.subscribe(feedbackTopic, 1000, PIDController::feedbackCallback, this);
-    this->outputController = &node.advertise<std_msgs::Float64>(outputTopic, 1000);
+    this->setPointReader = node.subscribe(setPointTopic, 1000, &PIDController::setPointCallback, this);
+    this->feedbackReader = node.subscribe(feedbackTopic, 1000, &PIDController::feedbackCallback, this);
+    this->outputController = node.advertise<std_msgs::Float64>(outputTopic, 1000);
 
     this->P = 0;
     this->I = 0;
     this->D = 0;
     this->err = 0;
     this->lastErr = 0;
-}
-
-void PIDController::setPointCallback(MsgPtr msg){
-    this->setpoint = msg->data;
-}
-
-void PIDController::feedbackCallback(MsgPtr msg){
-    this->feedback = msg->data;
 }
 
 double PIDController::computeNextOutput(){
@@ -30,7 +30,7 @@ double PIDController::computeNextOutput(){
 void PIDController::computeAndSendNextOutput(){
     std_msgs::Float64 msgNext;
     msgNext.data = this->computeNextOutput();
-    this->outputController->publish(msgNext);
+    this->outputController.publish(msgNext);
 }
 
 void PIDController::executeNextControlCycle(){

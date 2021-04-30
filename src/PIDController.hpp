@@ -5,11 +5,11 @@
 #include <std_msgs/Float64.h>
 #include <iostream>
 
+#define MsgPtr std_msgs::Float64::ConstPtr& 
+
 class PIDController{
 
     private:
-
-        typedef std_msgs::Float64::ConstPtr& MsgPtr;
 
         double P;
         double I;
@@ -20,11 +20,11 @@ class PIDController{
         double setpoint;
         double feedback;
         double lastOutput;
-        ros::Subscriber* setPointReader;
-        ros::Subscriber* feedbackReader;
-        ros::Publisher* outputController;
-        void setPointCallback(MsgPtr msg);
-        void feedbackCallback(MsgPtr msg);
+        ros::Subscriber setPointReader;
+        ros::Subscriber feedbackReader;
+        ros::Publisher outputController;
+        void setPointCallback(const MsgPtr msg);
+        void feedbackCallback(const MsgPtr msg);
         double computeNextOutput();
         void computeAndSendNextOutput();
 
