@@ -5,6 +5,7 @@
 double delta = 0;
 void deltaCallback(const std_msgs::Float64::ConstPtr& msg){
     delta = msg->data;
+    ROS_INFO("PID_OUTPUT: %0.6f", delta);
 }
 
 int main(int argc, char** argv){
@@ -14,7 +15,7 @@ int main(int argc, char** argv){
     ros::Publisher feedbackPub = n.advertise<std_msgs::Float64>("/testFeedbackTopic0", 1000);
     ros::Subscriber deltaSub = n.subscribe("/testOutputTopic0", 1000, &deltaCallback);
 
-    int hz = 50;
+    int hz = 100;
     ros::Rate loop(hz);
     bool setHigh = false;
     int setCounter = 0;
@@ -30,7 +31,9 @@ int main(int argc, char** argv){
         setpointPub.publish(setpoint);
 
         currOutput+=delta;
+        ROS_INFO("CURR_OUTPUT: %0.6f", currOutput);
         currOutput = currOutput*0.85 - 2;
+        ROS_INFO("CURR_OUTPUT_W_FORCE: %0.6f", currOutput);
 
         std_msgs::Float64 feedback;
         feedback.data = currOutput;

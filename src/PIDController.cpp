@@ -2,10 +2,12 @@
 
 void PIDController::setPointCallback(const MsgPtr msg){
     this->setpoint = msg->data;
+    this->initState |= 1;
 }
 
 void PIDController::feedbackCallback(const MsgPtr msg){
     this->feedback = msg->data;
+    this->initState |= 2;
 }
 
 PIDController::PIDController(std::string setPointTopic, std::string feedbackTopic, std::string outputTopic, ros::NodeHandle& node){
@@ -18,6 +20,7 @@ PIDController::PIDController(std::string setPointTopic, std::string feedbackTopi
     this->D = 0;
     this->err = 0;
     this->lastErr = 0;
+    this->initState = 0;
 }
 
 double PIDController::computeNextOutput(){
@@ -28,9 +31,12 @@ double PIDController::computeNextOutput(){
 }
 
 void PIDController::computeAndSendNextOutput(){
-    std_msgs::Float64 msgNext;
-    msgNext.data = this->computeNextOutput();
-    this->outputController.publish(msgNext);
+    if(this->initState == 3){
+        std_msgs::Float64 msgNext;
+        msgNext.data = this->computeNextOutput();
+        ROS_INFO("PID_CONTROLLER_CHECK: %0.6f", msgNext.data);
+        this->outputController.publish(msgNext);
+    }
 }
 
 void PIDController::executeNextControlCycle(){

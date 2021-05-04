@@ -42,6 +42,7 @@ int main(int argc, char** argv){
         D = controllerParams[i]["D"].getType() == XmlRpc::XmlRpcValue::TypeDouble ? static_cast<double>(controllerParams[i]["D"]) : static_cast<int>(controllerParams[i]["D"]);
 
         controllers[i] = new PIDController(setpoint, feedback, output, n);
+        ROS_INFO("PID CONSTANTS: %0.6f, %0.6f, %0.6f", P, I, D);
         controllers[i]->setPID(P, I, D);
         
     }

@@ -20,6 +20,7 @@ class PIDController{
         double setpoint;
         double feedback;
         double lastOutput;
+        short initState;
         ros::Subscriber setPointReader;
         ros::Subscriber feedbackReader;
         ros::Publisher outputController;
