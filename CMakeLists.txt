@@ -134,6 +134,9 @@ add_library(${PROJECT_NAME}
 add_executable(WResponseControl src/WResponseControl.cpp)
 target_link_libraries(WResponseControl ${catkin_LIBRARIES} ${PROJECT_NAME})
 
+add_executable(WResponseTest src/WResponseTest.cpp)
+target_link_libraries(WResponseTest ${catkin_LIBRARIES})
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
