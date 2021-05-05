@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 #include <std_msgs/Float64.h>
 #include <iostream>
+#include <chrono>
 
 #define MsgPtr std_msgs::Float64::ConstPtr& 
 
@@ -21,11 +22,17 @@ class PIDController{
         double feedback;
         double lastOutput;
         short initState;
+        
         ros::Subscriber setPointReader;
         ros::Subscriber feedbackReader;
         ros::Publisher outputController;
+
+        std::chrono::milliseconds lastCalculationTime;
+
         void setPointCallback(const MsgPtr msg);
         void feedbackCallback(const MsgPtr msg);
+        void updateLastCalculationTime();
+        static std::chrono::milliseconds getCurrentTime();
         double computeNextOutput();
         void computeAndSendNextOutput();
 
