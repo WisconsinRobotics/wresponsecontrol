@@ -29,7 +29,8 @@ PIDController::PIDController(std::string setPointTopic, std::string feedbackTopi
     this->err = 0;
     this->lastErr = 0;
     this->initState = 0;
-    this->outputCapSet = (bool[2]){false, false};
+    bool temp[2] = {false, false};
+    this->outputCapSet = temp;
     this->updateLastCalculationTime();
 }
 

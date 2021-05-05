@@ -44,6 +44,16 @@ int main(int argc, char** argv){
         controllers[i] = new PIDController(setpoint, feedback, output, n);
         // ROS_INFO("PID CONSTANTS: %0.6f, %0.6f, %0.6f", P, I, D);
         controllers[i]->setPID(P, I, D);
+
+        if(controllerParams[i].hasMember("max")){
+            ROS_ASSERT(controllerParams[i]["max"].getType() == XmlRpc::XmlRpcValue::TypeDouble || controllerParams[i]["max"].getType() == XmlRpc::XmlRpcValue::TypeInt);
+            controllers[i]->setMaxOutput(controllerParams[i]["max"].getType() == XmlRpc::XmlRpcValue::TypeDouble ? static_cast<double>(controllerParams[i]["max"]) : static_cast<int>(controllerParams[i]["max"]));
+        }
+
+        if(controllerParams[i].hasMember("min")){
+            ROS_ASSERT(controllerParams[i]["min"].getType() == XmlRpc::XmlRpcValue::TypeDouble || controllerParams[i]["min"].getType() == XmlRpc::XmlRpcValue::TypeInt);
+            controllers[i]->setMinOutput(controllerParams[i]["min"].getType() == XmlRpc::XmlRpcValue::TypeDouble ? static_cast<double>(controllerParams[i]["min"]) : static_cast<int>(controllerParams[i]["min"]));
+        }
         
     }
 
