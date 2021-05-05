@@ -10,7 +10,7 @@ int main(int argc, char** argv){
     ros::NodeHandle np("~");
     XmlRpc::XmlRpcValue controllerParams;
     np.getParam("controllers", controllerParams);
-    ROS_INFO("ENUM TYPE: %d", controllerParams.getType());
+    // ROS_INFO("ENUM TYPE: %d", controllerParams.getType());
     ROS_ASSERT(controllerParams.getType() == XmlRpc::XmlRpcValue::TypeArray);
     PIDController* controllers[controllerParams.size()]; 
     for(int i = 0; i < controllerParams.size(); i++){
@@ -31,7 +31,7 @@ int main(int argc, char** argv){
         ROS_ASSERT(controllerParams[i].hasMember("outputTopic") && controllerParams[i]["outputTopic"].getType() == XmlRpc::XmlRpcValue::TypeString);
         output = static_cast<std::string>(controllerParams[i]["outputTopic"]);
 
-        ROS_INFO("ENUM TYPE2: %d", controllerParams[i]["P"].getType());
+        // ROS_INFO("ENUM TYPE2: %d", controllerParams[i]["P"].getType());
         ROS_ASSERT(controllerParams[i].hasMember("P") && controllerParams[i]["P"].getType() == XmlRpc::XmlRpcValue::TypeDouble || controllerParams[i]["P"].getType() == XmlRpc::XmlRpcValue::TypeInt);
         P = controllerParams[i]["P"].getType() == XmlRpc::XmlRpcValue::TypeDouble ? static_cast<double>(controllerParams[i]["P"]) : static_cast<int>(controllerParams[i]["P"]);
 
@@ -42,7 +42,7 @@ int main(int argc, char** argv){
         D = controllerParams[i]["D"].getType() == XmlRpc::XmlRpcValue::TypeDouble ? static_cast<double>(controllerParams[i]["D"]) : static_cast<int>(controllerParams[i]["D"]);
 
         controllers[i] = new PIDController(setpoint, feedback, output, n);
-        ROS_INFO("PID CONSTANTS: %0.6f, %0.6f, %0.6f", P, I, D);
+        // ROS_INFO("PID CONSTANTS: %0.6f, %0.6f, %0.6f", P, I, D);
         controllers[i]->setPID(P, I, D);
         
     }
