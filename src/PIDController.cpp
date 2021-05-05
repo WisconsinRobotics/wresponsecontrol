@@ -29,6 +29,7 @@ PIDController::PIDController(std::string setPointTopic, std::string feedbackTopi
     this->err = 0;
     this->lastErr = 0;
     this->initState = 0;
+    this->outputCapSet = (bool[2]){false, false};
     this->updateLastCalculationTime();
 }
 
@@ -38,7 +39,9 @@ double PIDController::computeNextOutput(){
     this->sumErr += this->err;
     double timeElapsed = (PIDController::getCurrentTime().count() - this->lastCalculationTime.count())/1000.f;
     // ROS_INFO("TIME ELAPSED: %0.6f", timeElapsed*1000);
-    return this->lastOutput = this->getP()*this->err + this->getI()*this->sumErr*timeElapsed + this->getD()*(this->err - this->lastErr)/timeElapsed;
+    this->lastOutput = this->getP()*this->err + this->getI()*this->sumErr*timeElapsed + this->getD()*(this->err - this->lastErr)/timeElapsed;
+    this->lastOutput = this->getMaxOutputSet() && this->lastOutput > this->getMaxOutput() ? this->getMaxOutput() : this->getMinOutputSet() && this->lastOutput < this->getMinOutput() ? this->getMinOutput() : this->lastOutput;
+    return this->lastOutput;
 }
 
 void PIDController::computeAndSendNextOutput(){
@@ -83,4 +86,37 @@ void PIDController::setPID(double P, double I, double D){
     this->setP(P);
     this->setI(I);
     this->setD(D);
+}
+
+void PIDController::setMaxOutput(double max){
+    this->outputCap[1] = max;
+    this->outputCapSet[1] = true;
+}
+
+double PIDController::getMaxOutput(){
+    if(this->getMaxOutputSet()) return this->outputCap[1];
+    throw "The max value of this controller is not set";
+}
+
+void PIDController::setMinOutput(double min){
+    this->outputCap[0] = min;
+    this->outputCapSet[0] = true;
+}
+        
+double PIDController::getMinOutput(){
+    if(this->getMinOutputSet()) return this->outputCap[0];
+    throw "The min value of this controller is not set";
+}
+
+void PIDController::setMinMaxOutput(double min, double max){
+    this->setMinOutput(min);
+    this->setMaxOutput(max);
+}
+
+bool PIDController::getMaxOutputSet(){
+    return this->outputCapSet[1];
+}
+
+bool PIDController::getMinOutputSet(){
+    return this->outputCapSet[0];
 }

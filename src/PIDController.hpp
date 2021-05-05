@@ -21,6 +21,8 @@ class PIDController{
         double setpoint;
         double feedback;
         double lastOutput;
+        double *outputCap;
+        bool *outputCapSet;
         short initState;
         
         ros::Subscriber setPointReader;
@@ -46,6 +48,13 @@ class PIDController{
         double getD();
         void setPID(double P, double I, double D);
         double getError();
+        void setMaxOutput(double max);
+        double getMaxOutput();
+        void setMinOutput(double min);
+        double getMinOutput();
+        void setMinMaxOutput(double min, double max);
+        bool getMaxOutputSet();
+        bool getMinOutputSet();
         void executeNextControlCycle();
 
 };
