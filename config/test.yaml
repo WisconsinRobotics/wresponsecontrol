@@ -2,9 +2,9 @@ controllers:
   - setpointTopic: "testSetpointTopic0"
     feedbackTopic: "testFeedbackTopic0"
     outputTopic: "testOutputTopic0"
-    P: 0.2
-    I: 0.05
-    D: 0
+    P: 10
+    I: 2 #1.5
+    D: 0 #0.5557 #0.005
 
   # - setpointTopic: "testSetpointTopic1"
   #   feedbackTopic: "testFeedbackTopic1"
