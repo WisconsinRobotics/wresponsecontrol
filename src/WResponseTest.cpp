@@ -4,11 +4,12 @@
 #include <std_msgs/Float64.h>
 #include <fstream>
 #include <csignal>
+#include <chrono>
 
 double delta = 0;
 void deltaCallback(const std_msgs::Float64::ConstPtr& msg){
     delta = msg->data;
-    ROS_INFO("PID_OUTPUT: %0.6f", delta);
+    // ROS_INFO("PID_OUTPUT: %0.6f", delta);
 }
 
 std::fstream logFile;
@@ -36,8 +37,9 @@ int main(int argc, char** argv){
     bool setHigh = false;
     int setCounter = 0;
     double currOutput = 0;
+    double lastTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     while(ros::ok()){
-        if(setCounter >= hz/2){
+        if(setCounter >= 100){
             setCounter = 0;
             setHigh = !setHigh;
         }else setCounter++;
@@ -46,10 +48,11 @@ int main(int argc, char** argv){
         setpoint.data = setHigh ? 20 : 0;
         setpointPub.publish(setpoint);
 
-        currOutput+=delta;
-        ROS_INFO("CURR_OUTPUT: %0.6f", currOutput);
-        currOutput = currOutput*0.85 - 2;
-        ROS_INFO("CURR_OUTPUT_W_FORCE: %0.6f", currOutput);
+        currOutput+=delta*(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()-lastTime)/1000.f;
+        // ROS_INFO("CURR_OUTPUT: %0.6f", currOutput);
+        currOutput -= (currOutput*0.15 + 2)*(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()-lastTime)/1000.f;
+        lastTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        // ROS_INFO("CURR_OUTPUT_W_FORCE: %0.6f", currOutput);
 
         std_msgs::Float64 feedback;
         feedback.data = currOutput;
