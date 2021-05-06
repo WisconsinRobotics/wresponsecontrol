@@ -54,6 +54,11 @@ int main(int argc, char** argv){
             ROS_ASSERT(controllerParams[i]["min"].getType() == XmlRpc::XmlRpcValue::TypeDouble || controllerParams[i]["min"].getType() == XmlRpc::XmlRpcValue::TypeInt);
             controllers[i]->setMinOutput(controllerParams[i]["min"].getType() == XmlRpc::XmlRpcValue::TypeDouble ? static_cast<double>(controllerParams[i]["min"]) : static_cast<int>(controllerParams[i]["min"]));
         }
+
+        if(controllerParams[i].hasMember("ICap")){
+            ROS_ASSERT(controllerParams[i]["ICap"].getType() == XmlRpc::XmlRpcValue::TypeDouble || controllerParams[i]["ICap"].getType() == XmlRpc::XmlRpcValue::TypeInt);
+            controllers[i]->setICap(controllerParams[i]["ICap"].getType() == XmlRpc::XmlRpcValue::TypeDouble ? static_cast<double>(controllerParams[i]["ICap"]) : static_cast<int>(controllerParams[i]["ICap"]));
+        }
         
     }
 
