@@ -50,7 +50,7 @@ int main(int argc, char** argv){
 
         currOutput+=delta*(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()-lastTime)/1000.f;
         // ROS_INFO("CURR_OUTPUT: %0.6f", currOutput);
-        currOutput -= (currOutput*0.15 + 2)*(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()-lastTime)/1000.f;
+        currOutput -= (currOutput*0.25 + 10)*(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()-lastTime)/1000.f;
         lastTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         // ROS_INFO("CURR_OUTPUT_W_FORCE: %0.6f", currOutput);
 

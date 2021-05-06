@@ -3,8 +3,8 @@ controllers:
     feedbackTopic: "testFeedbackTopic0"
     outputTopic: "testOutputTopic0"
     P: 9
-    I: 1.5 
-    D: 0
+    I: 1.25
+    D: 0.03
     min: -100
     max: 100
 
