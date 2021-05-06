@@ -21,8 +21,8 @@ class PIDController{
         double setpoint;
         double feedback;
         double lastOutput;
-        double *outputCap;
-        bool *outputCapSet;
+        double outputCap[2];
+        bool outputCapSet[2];
         short initState;
         
         ros::Subscriber setPointReader;
