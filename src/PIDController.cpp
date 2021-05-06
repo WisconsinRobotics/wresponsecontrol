@@ -31,6 +31,7 @@ PIDController::PIDController(std::string setPointTopic, std::string feedbackTopi
     this->initState = 0;
     this->outputCapSet[0] = false;
     this->outputCapSet[1] = false;
+    this->iCapSet = false;
     this->updateLastCalculationTime();
 }
 
@@ -38,6 +39,7 @@ double PIDController::computeNextOutput(){
     this->lastErr = this->err;
     this->err = this->setpoint - this->feedback;
     this->sumErr += this->err;
+    this->sumErr = this->getICapSet() && abs(this->sumErr) > abs(this->getICap()) ? this->getICap() * this->sumErr/abs(this->sumErr) : this->sumErr;
     double timeElapsed = (PIDController::getCurrentTime().count() - this->lastCalculationTime.count())/1000.f;
     // ROS_INFO("TIME ELAPSED: %0.6f", timeElapsed*1000);
     this->lastOutput = this->getP()*this->err + this->getI()*this->sumErr*timeElapsed + this->getD()*(this->err - this->lastErr)/timeElapsed;
@@ -120,4 +122,18 @@ bool PIDController::getMaxOutputSet(){
 
 bool PIDController::getMinOutputSet(){
     return this->outputCapSet[0];
+}
+
+void PIDController::setICap(double iCap){
+    this->iCap = iCap;
+    this->iCapSet = true;
+}
+
+double PIDController::getICap(){
+    if(this->getICapSet()) return this->iCap;
+    throw "The I Cap of this controller is not set";
+}
+        
+bool PIDController::getICapSet(){
+    return this->iCapSet;
 }
