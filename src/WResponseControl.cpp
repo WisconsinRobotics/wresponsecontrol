@@ -75,7 +75,6 @@ int main(int argc, char** argv){
         controllers[i] = new PIDController(setpoint, feedback, output, n);
         controllers[i]->setPID(P, I, D);
 
-        // TODO:  Should max > min be enforced in the controller?  Is there a point in min <= max?
         // Check for the optional max parameter; if it exists and is a number, capture it in the controller
         if(controllerParams[i].hasMember("max")){
             ROS_ASSERT(controllerParams[i]["max"].getType() == XmlRpc::XmlRpcValue::TypeDouble || controllerParams[i]["max"].getType() == XmlRpc::XmlRpcValue::TypeInt);

@@ -172,7 +172,7 @@ class PIDController{
         double getError();
 
         /**
-         * @brief Set the maximum value of the output of the controller
+         * @brief Set the maximum value of the output of the controller.  It must be strictly greater than the min, if it is set.
          * 
          * @param max The new maximum value of the controller's ouput
          */
@@ -186,7 +186,7 @@ class PIDController{
         double getMaxOutput();
 
         /**
-         * @brief Set the minimum value of the output of the controller
+         * @brief Set the minimum value of the output of the controller.  It must be strictly less than the max, if it is set.
          * 
          * @param min The new minimum value of the controller's output
          */
@@ -200,7 +200,7 @@ class PIDController{
         double getMinOutput();
 
         /**
-         * @brief Set the minimum and maximum of the controller's output
+         * @brief Set the minimum and maximum of the controller's output.  The max must be strictly greater than the min.
          * 
          * @param min The new minimum value of the controller's output
          * @param max The new maximum value of the controller's output

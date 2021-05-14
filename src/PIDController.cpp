@@ -108,6 +108,7 @@ void PIDController::setPID(double P, double I, double D){
 }
 
 void PIDController::setMaxOutput(double max){
+    if(this->getMinOutputSet() && this->getMinOutput() >= max) throw "Max must be greater than min.";
     this->outputCap[1] = max;
     // Set that the max ouput value has been set
     this->outputCapSet[1] = true;
@@ -120,6 +121,7 @@ double PIDController::getMaxOutput(){
 }
 
 void PIDController::setMinOutput(double min){
+    if(this->getMaxOutputSet() && this->getMaxOutput() <= min) throw "Min must be less than max.";
     this->outputCap[0] = min;
     // Set that the min output value has been set
     this->outputCapSet[0] = true;
