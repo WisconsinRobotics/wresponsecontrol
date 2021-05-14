@@ -1,3 +1,4 @@
+rate: 50
 controllers:
   - setpointTopic: "testSetpointTopic0"
     feedbackTopic: "testFeedbackTopic0"

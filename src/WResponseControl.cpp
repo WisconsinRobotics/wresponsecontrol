@@ -96,9 +96,13 @@ int main(int argc, char** argv){
         
     }
 
+    // Get the rate of the controllers from the config file
+    XmlRpc::XmlRpcValue rate;
+    np.getParam("rate", rate);
+    // Check that the rate is a number; set the appropriate rate
+    ROS_ASSERT(rate.getType() == XmlRpc::XmlRpcValue::TypeDouble || rate.getType() == XmlRpc::XmlRpcValue::TypeInt);
     // Define the loop rate (Hz)
-    // TODO:  Should this be configurable?  I mean, I already have a config file.
-    ros::Rate loop(50);
+    ros::Rate loop(rate.getType() == XmlRpc::XmlRpcValue::TypeDouble ? static_cast<double>(rate) : static_cast<int>(rate));
 
     // While ROS is active...
     while(ros::ok()){
