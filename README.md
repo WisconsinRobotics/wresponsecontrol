@@ -4,7 +4,7 @@ This package provides a ROS package that, given a setpoint stream, output channe
   
 ---
 ## Usage
-To use WResponseControl, place this project in your ROS package directory and make a launch file like `launch/demo.launch` and use a YAML ROS parameters file like `demo/demo.yaml` to configure what controllers you want and how you want them to work.
+To use WResponseControl, place this project in your ROS package directory and make a launch file like `launch/demo.launch` and use a YAML ROS parameters file like `demo/demo.yaml` to configure what controllers you want and how you want them to work.  When setting up what ROS topics should be used, keep in mind that the only supported message type is `std_msgs/Float64`.
   
 ---
 ## Future Work
