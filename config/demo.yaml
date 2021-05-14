@@ -9,9 +9,4 @@ controllers:
     min: -100
     max: 100
 
-  # - setpointTopic: "testSetpointTopic1"
-  #   feedbackTopic: "testFeedbackTopic1"
-  #   outputTopic: "testOutputTopic1"
-  #   P: 4.5
-  #   I: 2.5
-  #   D: 1.5
+# Extra controller entries go here

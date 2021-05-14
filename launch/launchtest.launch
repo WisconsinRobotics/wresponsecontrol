@@ -1,6 +1,0 @@
-<launch>
-    <node name="controller" pkg="wresponsecontrol" type="WResponseControl" output="screen">
-        <rosparam file="$(find wresponsecontrol)/config/test.yaml"/>
-    </node>
-    <node name="stimulus" pkg="wresponsecontrol" type="WResponseTest" output="screen"/>
-</launch>
