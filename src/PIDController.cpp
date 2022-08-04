@@ -1,48 +1,48 @@
 #include "PIDController.hpp"
+#include <chrono>
+#include <stdexcept>
 
-void PIDController::setPointCallback(const MsgPtr msg){
+void PIDController::setPointCallback(const MsgPtr &msg) {
     // Capture the setpoint message data
     this->setpoint = msg->data;
     // Change the init state to reflect that a setpoint has been received
     this->initState |= 1;
 }
 
-void PIDController::feedbackCallback(const MsgPtr msg){
+void PIDController::feedbackCallback(const MsgPtr &msg) {
     // Capture the feedback message data
     this->feedback = msg->data;
-    // Change the init state to reflect that a feedback message has been received
+    // Change the init state to reflect that a feedback message has been
+    // received
     this->initState |= 2;
 }
 
-std::chrono::milliseconds PIDController::getCurrentTime(){
-    return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
+auto PIDController::getCurrentTime()
+    -> std::chrono::time_point<std::chrono::system_clock> {
+    return std::chrono::system_clock::now();
 }
 
-void PIDController::updateLastCalculationTime(){
+void PIDController::updateLastCalculationTime() {
     this->lastCalculationTime = PIDController::getCurrentTime();
 }
 
-PIDController::PIDController(std::string setPointTopic, std::string feedbackTopic, std::string outputTopic, ros::NodeHandle& node){
+PIDController::PIDController(std::string setPointTopic,
+                             std::string feedbackTopic, std::string outputTopic,
+                             ros::NodeHandle &node)
+    : P{0}, I{0}, D{0}, err{0}, lastErr{0}, initState{0} {
     // Initialize the ROS topics for this controller
-    this->setPointReader = node.subscribe(setPointTopic, 1000, &PIDController::setPointCallback, this);
-    this->feedbackReader = node.subscribe(feedbackTopic, 1000, &PIDController::feedbackCallback, this);
-    this->outputController = node.advertise<std_msgs::Float64>(outputTopic, 1000);
+    this->setPointReader = node.subscribe(
+        setPointTopic, 1000, &PIDController::setPointCallback, this);
+    this->feedbackReader = node.subscribe(
+        feedbackTopic, 1000, &PIDController::feedbackCallback, this);
+    this->outputController =
+        node.advertise<std_msgs::Float64>(outputTopic, 1000);
 
-    // Initialize all variables to 0 or false
-    this->P = 0;
-    this->I = 0;
-    this->D = 0;
-    this->err = 0;
-    this->lastErr = 0;
-    this->initState = 0;
-    this->outputCapSet[0] = false;
-    this->outputCapSet[1] = false;
-    this->iCapSet = false;
     // Set the last calculation time for the next calculation
     this->updateLastCalculationTime();
 }
 
-double PIDController::computeNextOutput(){
+double PIDController::computeNextOutput() {
     // Store the current error as the last error
     this->lastErr = this->err;
     // Compute the new current error
@@ -50,114 +50,113 @@ double PIDController::computeNextOutput(){
     // Add the new current error to the summed error
     this->sumErr += this->err;
     // Cap the summed error if the summed error cap is set
-    this->sumErr = this->getICapSet() && abs(this->sumErr) > abs(this->getICap()) ? this->getICap() * this->sumErr/abs(this->sumErr) : this->sumErr;
+    this->sumErr =
+        this->getICapSet() && abs(this->sumErr) > abs(this->getICap())
+            ? this->getICap() * this->sumErr / abs(this->sumErr)
+            : this->sumErr;
     // Calculate the time elapsed since the last calculation in seconds
-    double timeElapsed = (PIDController::getCurrentTime().count() - this->lastCalculationTime.count())/1000.f;
+    double timeElapsed =
+        std::chrono::duration_cast<std::chrono::duration<double>>(
+            PIDController::getCurrentTime() - this->lastCalculationTime)
+            .count();
     // Use the standard PID formula to compute the next output
-    this->lastOutput = this->getP()*this->err + this->getI()*this->sumErr*timeElapsed + this->getD()*(this->err - this->lastErr)/timeElapsed;
+    this->lastOutput = this->getP() * this->err +
+                       this->getI() * this->sumErr * timeElapsed +
+                       this->getD() * (this->err - this->lastErr) / timeElapsed;
     // Cap the next output if applicable
-    this->lastOutput = this->getMaxOutputSet() && this->lastOutput > this->getMaxOutput() ? this->getMaxOutput() : this->getMinOutputSet() && this->lastOutput < this->getMinOutput() ? this->getMinOutput() : this->lastOutput;
+    this->lastOutput =
+        this->getMaxOutputSet() && this->lastOutput > this->getMaxOutput()
+            ? this->getMaxOutput()
+        : this->getMinOutputSet() && this->lastOutput < this->getMinOutput()
+            ? this->getMinOutput()
+            : this->lastOutput;
     return this->lastOutput;
 }
 
-void PIDController::computeAndSendNextOutput(){
+void PIDController::computeAndSendNextOutput() {
     // If both a setpoint and feedback message have been received...
-    if(this->initState == 3){
+    if (this->initState == 3) {
         // Compute and send the next output to the output ROS topic
         std_msgs::Float64 msgNext;
         msgNext.data = this->computeNextOutput();
         this->outputController.publish(msgNext);
     }
-    // Set the last calculation time to provide for the correct next output calculation
+    // Set the last calculation time to provide for the correct next output
+    // calculation
     this->updateLastCalculationTime();
 }
 
-void PIDController::executeNextControlCycle(){
+void PIDController::executeNextControlCycle() {
     // This method does the control cycle work
     this->computeAndSendNextOutput();
 }
 
-void PIDController::setP(double P){
-    this->P = P;
-}
+void PIDController::setP(double P) { this->P = P; }
 
-double PIDController::getP(){
-    return this->P;
-}
+auto PIDController::getP() const -> double { return this->P; }
 
-void PIDController::setI(double I){
-    this->I = I;
-}
+void PIDController::setI(double I) { this->I = I; }
 
-double PIDController::getI(){
-    return this->I;
-}
+auto PIDController::getI() const -> double { return this->I; }
 
-void PIDController::setD(double D){
-    this->D = D;
-}
+void PIDController::setD(double D) { this->D = D; }
 
-double PIDController::getD(){
-    return this->D;
-}
+auto PIDController::getD() const -> double { return this->D; }
 
-void PIDController::setPID(double P, double I, double D){
+void PIDController::setPID(double P, double I, double D) {
     this->setP(P);
     this->setI(I);
     this->setD(D);
 }
 
-void PIDController::setMaxOutput(double max){
-    if(this->getMinOutputSet() && this->getMinOutput() >= max) throw "Max must be greater than min.";
-    this->outputCap[1] = max;
-    // Set that the max ouput value has been set
-    this->outputCapSet[1] = true;
+void PIDController::setMaxOutput(double max) {
+    if (this->getMinOutputSet() && this->getMinOutput() >= max)
+        throw std::invalid_argument{"Max must be greater than min"};
+    this->outputCap.upper = max;
 }
 
-double PIDController::getMaxOutput(){
+auto PIDController::getMaxOutput() const -> double {
     // If the max output is not set, throw an error
-    if(this->getMaxOutputSet()) return this->outputCap[1];
-    throw "The max value of this controller is not set";
+    if (this->getMaxOutputSet())
+        return *this->outputCap.upper;
+    throw std::runtime_error{"The max value of this controller is not set"};
 }
 
-void PIDController::setMinOutput(double min){
-    if(this->getMaxOutputSet() && this->getMaxOutput() <= min) throw "Min must be less than max.";
-    this->outputCap[0] = min;
-    // Set that the min output value has been set
-    this->outputCapSet[0] = true;
+void PIDController::setMinOutput(double min) {
+    if (this->getMaxOutputSet() && this->getMaxOutput() <= min)
+        throw std::invalid_argument{"Min must be less than max"};
+    this->outputCap.lower = min;
 }
-        
-double PIDController::getMinOutput(){
+
+auto PIDController::getMinOutput() const -> double {
     // If the min output is not set, throw an error
-    if(this->getMinOutputSet()) return this->outputCap[0];
-    throw "The min value of this controller is not set";
+    if (this->getMinOutputSet())
+        return *this->outputCap.lower;
+    throw std::runtime_error{"The min value of this controller is not set"};
 }
 
-void PIDController::setMinMaxOutput(double min, double max){
-    this->setMinOutput(min);
-    this->setMaxOutput(max);
+void PIDController::setMinMaxOutput(OutputBounds<double> bounds) {
+    this->setMinOutput(bounds.lower);
+    this->setMaxOutput(bounds.upper);
 }
 
-bool PIDController::getMaxOutputSet(){
-    return this->outputCapSet[1];
+auto PIDController::getMaxOutputSet() const -> bool {
+    return static_cast<bool>(this->outputCap.upper);
 }
 
-bool PIDController::getMinOutputSet(){
-    return this->outputCapSet[0];
+auto PIDController::getMinOutputSet() const -> bool {
+    return static_cast<bool>(this->outputCap.lower);
 }
 
-void PIDController::setICap(double iCap){
-    this->iCap = iCap;
-    // Set that the summed error cap is set
-    this->iCapSet = true;
-}
+void PIDController::setICap(double iCap) { this->iCap = iCap; }
 
-double PIDController::getICap(){
+auto PIDController::getICap() const -> double {
     // If the summed error cap is not set, throw an error
-    if(this->getICapSet()) return this->iCap;
-    throw "The I Cap of this controller is not set";
+    if (this->getICapSet())
+        return *this->iCap;
+    throw std::runtime_error{"The I Cap of this controller is not set"};
 }
-        
-bool PIDController::getICapSet(){
-    return this->iCapSet;
+
+auto PIDController::getICapSet() const -> bool {
+    return static_cast<bool>(this->iCap);
 }
