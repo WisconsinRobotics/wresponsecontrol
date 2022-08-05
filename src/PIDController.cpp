@@ -5,16 +5,11 @@
 void PIDController::setPointCallback(const MsgPtr &msg) {
     // Capture the setpoint message data
     this->setpoint = msg->data;
-    // Change the init state to reflect that a setpoint has been received
-    this->initState |= 1;
 }
 
 void PIDController::feedbackCallback(const MsgPtr &msg) {
     // Capture the feedback message data
     this->feedback = msg->data;
-    // Change the init state to reflect that a feedback message has been
-    // received
-    this->initState |= 2;
 }
 
 auto PIDController::getCurrentTime()
@@ -26,10 +21,11 @@ void PIDController::updateLastCalculationTime() {
     this->lastCalculationTime = PIDController::getCurrentTime();
 }
 
-PIDController::PIDController(std::string setPointTopic,
-                             std::string feedbackTopic, std::string outputTopic,
+PIDController::PIDController(const std::string &setPointTopic,
+                             const std::string &feedbackTopic,
+                             const std::string &outputTopic,
                              ros::NodeHandle &node)
-    : P{0}, I{0}, D{0}, err{0}, lastErr{0}, initState{0} {
+    : P{0}, I{0}, D{0}, err{0}, lastErr{0} {
     // Initialize the ROS topics for this controller
     this->setPointReader = node.subscribe(
         setPointTopic, 1000, &PIDController::setPointCallback, this);
@@ -42,11 +38,11 @@ PIDController::PIDController(std::string setPointTopic,
     this->updateLastCalculationTime();
 }
 
-double PIDController::computeNextOutput() {
+auto PIDController::computeNextOutput() -> double {
     // Store the current error as the last error
     this->lastErr = this->err;
     // Compute the new current error
-    this->err = this->setpoint - this->feedback;
+    this->err = *this->setpoint - *this->feedback;
     // Add the new current error to the summed error
     this->sumErr += this->err;
     // Cap the summed error if the summed error cap is set
@@ -75,7 +71,7 @@ double PIDController::computeNextOutput() {
 
 void PIDController::computeAndSendNextOutput() {
     // If both a setpoint and feedback message have been received...
-    if (this->initState == 3) {
+    if (this->setpoint && this->feedback) {
         // Compute and send the next output to the output ROS topic
         std_msgs::Float64 msgNext;
         msgNext.data = this->computeNextOutput();

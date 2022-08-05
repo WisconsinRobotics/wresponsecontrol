@@ -42,17 +42,15 @@ private:
     /// The summed error over all cycles
     double sumErr;
     /// The current target value of the controller
-    double setpoint;
+    std::optional<double> setpoint;
     /// The current external feedback value to the controller
-    double feedback;
+    std::optional<double> feedback;
     /// The last output sent
     double lastOutput;
     /// The set of min/max bounds for the output (may or may not be set)
     OptionalBounds<double> outputCap;
     /// The maximum magnitude of the summed error (may or may not be set)
     std::optional<double> iCap;
-    /// The state of the received information needed before sending outputs
-    short initState;
 
     /// The ROS subscriber to capture setpoint changes
     ros::Subscriber setPointReader;
@@ -117,8 +115,9 @@ public:
      * topic
      * @param node The ROS node that contains this PID Controller
      */
-    PIDController(std::string setPointTopic, std::string feedbackTopic,
-                  std::string outputTopic, ros::NodeHandle &node);
+    PIDController(const std::string &setPointTopic,
+                  const std::string &feedbackTopic,
+                  const std::string &outputTopic, ros::NodeHandle &node);
 
     /**
      * @brief Sets this controller's P value
