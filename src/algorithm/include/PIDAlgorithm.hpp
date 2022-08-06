@@ -30,6 +30,7 @@ class PIDAlgorithm {
 public:
     explicit PIDAlgorithm(const PIDParameters &params);
     [[nodiscard]] auto getParams() const -> PIDParameters;
+    void setParams(const PIDParameters &params);
     auto executeNextControlLoopCycle(const PIDControlLoopParameters &params)
         -> double;
 

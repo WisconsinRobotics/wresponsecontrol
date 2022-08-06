@@ -46,4 +46,8 @@ void PIDAlgorithm::reset() {
     prevErr = 0;
 }
 
+void PIDAlgorithm::setParams(const PIDParameters &params) {
+    algorithmParams = params;
+}
+
 } // namespace Algorithm::PID

@@ -102,3 +102,16 @@ TEST(PIDAlgorithm, TestMinOutputCap) {
     for (uint32_t i{0}; i < 100; ++i)
         EXPECT_EQ(uut.executeNextControlLoopCycle({-1, 0}), -20);
 }
+
+TEST(PIDAlgorithm, TestParameterReset) {
+    PIDParameters params{1, 2, 3, {}, {}, {}};
+    PIDAlgorithm uut{params};
+    EXPECT_EQ(uut.executeNextControlLoopCycle({1, 0}), 1 + 2 + 3);
+    EXPECT_EQ(uut.executeNextControlLoopCycle({0, 0}), 0 + 2 + -3);
+    EXPECT_EQ(uut.executeNextControlLoopCycle({0, 0}), 2);
+    EXPECT_EQ(uut.getParams(), params);
+    PIDParameters params2{6, 5, 4, 3, 2, 1};
+    uut.setParams(params2);
+    EXPECT_EQ(uut.getParams(), params2);
+    EXPECT_EQ(uut.executeNextControlLoopCycle({0, 0}), 2);
+}
