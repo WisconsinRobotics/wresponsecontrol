@@ -59,7 +59,46 @@ TEST(PIDAlgorithm, TestDerivativeResponse) {
     }
 }
 
-TEST(PIDAlgorithm, TestMaxIntegralValue) {
-    PIDParameters params{0, 3, 0};
-    params.ICap = 20;
+TEST(PIDAlgorithm, TestPIDControl) {
+    PIDParameters params{1, 1, 1};
+    PIDAlgorithm uut{params};
+    EXPECT_EQ(uut.executeNextControlLoopCycle({1, 0}), 1 + 1 + 1);
+    EXPECT_EQ(uut.executeNextControlLoopCycle({3, 1}), 2 + (1 + 2) + (2 - 1));
+}
+
+TEST(PIDAlgorithm, TestMaximumIntegralComponent) {
+    PIDParameters params{0, 1, 0, 30};
+    PIDAlgorithm uut{params};
+    while (uut.executeNextControlLoopCycle({1, 0}) < 30)
+        ;
+    for (uint32_t i{0}; i < 100; ++i)
+        EXPECT_EQ(uut.executeNextControlLoopCycle({1, 0}), 30);
+}
+
+TEST(PIDAlgorithm, TestReset) {
+    PIDParameters params{0, 1, 0, 30};
+    PIDAlgorithm uut{params};
+    while (uut.executeNextControlLoopCycle({1, 0}) < 30)
+        ;
+    EXPECT_EQ(uut.executeNextControlLoopCycle({0, 0}), 30);
+    uut.reset();
+    EXPECT_EQ(uut.executeNextControlLoopCycle({0, 0}), 0);
+}
+
+TEST(PIDAlgorithm, TestMaxOuputCap) {
+    PIDParameters params{0, 1, 0, {}, 30, {}};
+    PIDAlgorithm uut{params};
+    while (uut.executeNextControlLoopCycle({1, 0}) < 30)
+        ;
+    for (uint32_t i{0}; i < 100; ++i)
+        EXPECT_EQ(uut.executeNextControlLoopCycle({1, 0}), 30);
+}
+
+TEST(PIDAlgorithm, TestMinOutputCap) {
+    PIDParameters params{0, 1, 0, {}, {}, -20};
+    PIDAlgorithm uut{params};
+    while (uut.executeNextControlLoopCycle({-2, 0}) > -20)
+        ;
+    for (uint32_t i{0}; i < 100; ++i)
+        EXPECT_EQ(uut.executeNextControlLoopCycle({-1, 0}), -20);
 }

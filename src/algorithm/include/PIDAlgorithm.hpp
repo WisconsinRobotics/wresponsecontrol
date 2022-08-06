@@ -2,18 +2,22 @@
 #define SRC_ALGORITHM_PIDALGORITHM
 
 #include <optional>
+#include <tuple>
 
 namespace Algorithm::PID {
 
 struct PIDParameters {
-    double P;
-    double I;
-    double D;
+    double P{0};
+    double I{0};
+    double D{0};
 
-    std::optional<double> ICap;
+    std::optional<double> ICap{};
+    std::optional<double> max{};
+    std::optional<double> min{};
 
     auto operator==(const PIDParameters &rhs) const -> bool {
-        return P == rhs.P && I == rhs.I && D == rhs.D;
+        return std::tie(P, I, D, ICap, max, min) ==
+               std::tie(rhs.P, rhs.I, rhs.D, rhs.ICap, rhs.max, rhs.min);
     };
 };
 
