@@ -148,12 +148,6 @@ add_subdirectory(src)
 #   ${catkin_LIBRARIES}
 # )
 
-##########
-## Test ##
-##########
-
-add_subdirectory(test)
-
 #############
 ## Install ##
 #############

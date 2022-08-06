@@ -1,0 +1,2 @@
+catkin_add_gtest(test_PIDAlgorithm test_PIDAlgorithm.cpp)
+target_link_libraries(test_PIDAlgorithm algorithm gtest_main)
