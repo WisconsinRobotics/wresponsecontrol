@@ -9,6 +9,7 @@ project(wresponsecontrol)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
 roscpp
+message_generation
 )
 
 ## System dependencies are found with CMake's conventions
